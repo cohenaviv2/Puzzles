@@ -12,7 +12,7 @@ public class Puzzle {
     private static final int DOWN = 1;
     private static final int LEFT = 2;
     private static final int RIGHT = 3;
-
+    
     public Puzzle(int size, int[][] startingBoard) {
         // Initial with starting board
         this.size = size;
@@ -43,38 +43,40 @@ public class Puzzle {
         }
     }
 
-
+    public PuzzleGraph getPuzzleGraph() {
+        return new PuzzleGraph(this);
+    }
 
     private boolean isValidBoard(int[][] board) {
         // Check if the board has the correct size
         if (board.length != size || board[0].length != size) {
             return false;
         }
-    
+
         // Flatten the 2D board to a 1D array for permutation checking
         int[] flatBoard = new int[size * size];
         int k = 0;
-    
+
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 flatBoard[k++] = board[i][j];
             }
         }
-    
+
         // Check if the board contains unique numbers from 0 to size*size - 1
         boolean[] visited = new boolean[size * size];
-    
+
         for (int num : flatBoard) {
             if (num < 0 || num >= size * size || visited[num]) {
                 return false; // Invalid number or duplicate
             }
             visited[num] = true;
         }
-    
+
         // Check if the permutation is solvable
         return isSolvable(flatBoard);
     }
-    
+
     private boolean isSolvable(int[] flatBoard) {
         // Helper method to check if the permutation is solvable
         int inversions = 0;
@@ -91,7 +93,7 @@ public class Puzzle {
         int emptyRow = 0;
         for (int i = 0; i < flatBoard.length; i++) {
             if (flatBoard[i] == 0) {
-                emptyRow = size - i / size;
+                emptyRow = size - 1 - i / size;  // Fix the calculation here
                 break;
             }
         }
@@ -99,11 +101,12 @@ public class Puzzle {
         // The puzzle is solvable if the number of inversions is even or if the empty space
         // is on an even row counting from the bottom (1-based index)
         return (inversions % 2 == 0 && size % 2 == 1) || ((inversions + emptyRow) % 2 == 0 && size % 2 == 0);
-    }    
+    }
+    
 
     public boolean isSolved() {
         int count = 1;
-    
+
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (i == size - 1 && j == size - 1) {
@@ -122,7 +125,6 @@ public class Puzzle {
         }
         return true;
     }
-    
 
     private void initializeBoard(int[][] startingBoard) {
         for (int i = 0; i < size; i++) {
@@ -147,21 +149,31 @@ public class Puzzle {
         board[size - 1][size - 1] = 0; // Set the last element to 0, representing the empty space
         emptyRow = size - 1;
         emptyCol = size - 1;
+
         // Perform valid random moves (n) on the board
         if (n > 0) {
             makeRandomMoves(n);
         }
+        System.out.println("Is valid board state: "+isValidBoard(board));
     }
 
     private void makeRandomMoves(int n) {
         Random random = new Random();
-        for (int i = 0; i < n; i++) {
-            int move;
-            do {
-                move = random.nextInt(4);
-            } while (!isValidMove(move));
 
-            performMove(move);
+        for (int i = 0; i < n; i++) {
+            // Generate a list of valid moves for the current board
+            List<Integer> validMoves = new ArrayList<>();
+            for (int move = 0; move < 4; move++) {
+                if (isValidMove(move)) {
+                    validMoves.add(move);
+                }
+            }
+
+            // Randomly select a move from the list of valid moves
+            if (!validMoves.isEmpty()) {
+                int randomMove = validMoves.get(random.nextInt(validMoves.size()));
+                performMove(randomMove);
+            }
         }
     }
 
