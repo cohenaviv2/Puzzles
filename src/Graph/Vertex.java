@@ -1,16 +1,13 @@
 package Graph;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Vertex {
     public final int ID;
-    private final Map<Vertex, Double> adj; // Neighbor to Weight
-    // Search
+    private Map<Vertex, Double> adj; // Neighbor to Weight
     private Vertex pi;
-    private int d;
-    private String color;
-    private int h;
+    private int distance;
+    private int heuristic;
 
     public Vertex(int id) {
         ID = id;
@@ -18,8 +15,8 @@ public class Vertex {
     }
 
     public List<Vertex> getNeighbors() {
-        return adj.keySet().stream().sorted((v1, v2) -> v1.ID - v2.ID).collect(Collectors.toList());
-    }
+        return Collections.unmodifiableList(new ArrayList<>(adj.keySet()));
+    }    
 
     public void addNeighbor(Vertex neighbor, double weight) {
         if (!adj.containsKey(neighbor) || neighbor != this) {
@@ -40,11 +37,11 @@ public class Vertex {
     }
 
     public int getDistance() {
-        return d;
+        return distance;
     }
 
     public void setDistance(int distance) {
-        this.d = distance;
+        this.distance = distance;
     }
 
     public Vertex getPi() {
@@ -56,23 +53,15 @@ public class Vertex {
     }
 
     public int getFunction() {
-        return d + h;
+        return distance + heuristic;
     }
 
     public int getHeuristic() {
-        return h;
+        return heuristic;
     }
 
     public void setHeuristic(int heuristic) {
-        this.h = heuristic;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
+        this.heuristic = heuristic;
     }
 
     @Override
@@ -90,11 +79,6 @@ public class Vertex {
             return false;
         Vertex other = (Vertex) obj;
         if (ID != other.ID)
-            return false;
-        if (adj == null) {
-            if (other.adj != null)
-                return false;
-        } else if (!adj.equals(other.adj))
             return false;
         return true;
     }

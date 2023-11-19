@@ -2,13 +2,15 @@ package Puzzles;
 
 import Graph.*;
 import java.util.*;
+import java.text.DecimalFormat;
 
 public class PuzzleGraph {
     private Graph puzzleGraph;
     private Puzzle initialPuzzle;
     private Map<Integer, Puzzle> puzzleStates; // ID to Puzzle
-    private int solutionId; // Store the ID of the solved puzzle state
+    private int solutionId; // Store the ID of the solved puzzle vertex
     private boolean solved;
+    private long startTime;
 
     public PuzzleGraph(Puzzle initialPuzzle) {
         this.puzzleGraph = new Graph();
@@ -18,8 +20,12 @@ public class PuzzleGraph {
 
     public void search_BFS() {
         if (!solved) {
-            if (initialPuzzle.isSolved()) return;
-            Queue<Integer> queue = new LinkedList<>();
+            startTime = System.currentTimeMillis();
+            if (initialPuzzle.isSolved()) {
+                printSolution();
+                return;
+            }
+            LinkedList<Integer> queue = new LinkedList<>();
             Set<Puzzle> visited = new HashSet<>();
 
             int startId = puzzleGraph.addVertex();
@@ -32,9 +38,8 @@ public class PuzzleGraph {
                 Puzzle currentPuzzle = puzzleStates.get(currentId);
 
                 if (currentPuzzle.isSolved()) {
-                    System.out.println("\nSolved!\n");
                     solutionId = currentId;
-                    System.out.println("soultion id: "+solutionId+"\n");
+                    printSolution();
                     return;
                 }
 
@@ -45,8 +50,11 @@ public class PuzzleGraph {
                         int nextId = puzzleGraph.addVertex();
                         puzzleStates.put(nextId, nextPuzzle);
                         puzzleGraph.addUndirectedEdge(currentId, nextId, 0);
-
-                        queue.offer(nextId);
+                        if (nextPuzzle.isSolved()) {
+                            queue.addFirst(nextId);
+                        } else {
+                            queue.offer(nextId);
+                        }
                         visited.add(nextPuzzle);
                     }
                 }
@@ -54,66 +62,51 @@ public class PuzzleGraph {
         }
     }
 
-    private void buildGraph() {
-        // Add the initial puzzle state as the first vertex
-        int id = puzzleGraph.addVertex();
-        puzzleStates.put(id, initialPuzzle);
-        boolean solved = initialPuzzle.isSolved();
+    public void search_AStar() {
+        if (!solved) {
+            if (initialPuzzle.isSolved())
+                return;
 
-        Queue<Integer> queue = new LinkedList<>();
-        Set<Puzzle> visited = new HashSet<>();
-
-        queue.offer(id);
-
-        while (!queue.isEmpty()) {
-            int currentId = queue.poll();
-            Puzzle currentPuzzle = puzzleStates.get(currentId);
-
-            // Generate possible moves for the current puzzle state
-            List<Puzzle> nextPuzzles = currentPuzzle.generatePossibleMoves();
-
-            for (Puzzle nextPuzzle : nextPuzzles) {
-                // Check if the next state already exists in the graph
-                if (!visited.contains(nextPuzzle)) {
-                    int nextId = puzzleGraph.addVertex();
-                    puzzleStates.put(nextId, nextPuzzle);
-                    puzzleGraph.addUndirectedEdge(currentId, nextId, 0);
-
-                    // Check if the next state is the solved state
-                    // if (nextPuzzle.isSolved()) {
-                    // targetVertexId = nextId;
-                    // solved = true;
-                    // System.out.println("** THIS IS THE SOLVED PUZZLE **");
-                    // }
-
-                    queue.offer(nextId);
-                    visited.add(nextPuzzle);
-                    // System.out.println(nextPuzzle);
-
-                    // if (nextPuzzle.isSolved()) {
-                    // targetVertexId = nextId;
-                    // solved = true;
-                    // System.out.println("** THIS IS THE SOLVED PUZZLE **");
-                    // System.out.println(nextPuzzle);
-                    // break;
-                    // } else {
-                    // queue.offer(nextId);
-                    // visited.add(nextPuzzle);
-                    // System.out.println(nextPuzzle);
-
-                    // }
-                }
-            }
         }
-        System.out.println("Number of vertices: " + this.puzzleGraph.getAllVertices().size());
+    }
+
+    private void printSolution() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nSolved!\n\n");
+        sb.append("Num of vertices: " + getNumOfVertices() + "\n");
+        sb.append("Time: " + elapsedTime() + " seconds\n");
+        sb.append("Memory Used: " + memoryUsage() + " MB\n");
+        sb.append("Soultion vertex ID: " + solutionId + "\n");
+        System.out.println(sb.toString());
+    }
+
+    private String memoryUsage() {
+        Runtime runtime = Runtime.getRuntime();
+        double memoryUsedInBytes = runtime.totalMemory() - runtime.freeMemory();
+        double memoryUsedInMegabytes = memoryUsedInBytes / (1024 * 1024);
+    
+        // Format the result to have a dot and three digits
+        return String.format("%.3f", memoryUsedInMegabytes);
+    }
+    
+    private String elapsedTime() {
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        // Convert milliseconds to seconds with dot and milliseconds
+        double secondsWithDot = elapsedTime / 1000.0;
+        return String.format("%.3f", secondsWithDot);
     }
 
     public Graph toGraph() {
         return puzzleGraph;
     }
 
-    public int getNumOfVertices() {
-        return puzzleGraph.getAllVertices().size();
+    private String getNumOfVertices() {
+        // Create a DecimalFormat object with the pattern "#,###"
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        // Format the number using the DecimalFormat
+        String formattedNumber = decimalFormat.format(puzzleGraph.size());
+        return formattedNumber;
     }
 
     public int getSolutionId() {
@@ -128,35 +121,20 @@ public class PuzzleGraph {
     public static void main(String[] args) {
 
         // Create 15-Puzzle with 50 random moves from the solution borad
-        Puzzle puzzle15 = new FifteenPuzzle(5000);
+        Puzzle puzzle15 = new FifteenPuzzle(50);
         System.out.println(puzzle15);
 
-        // Solve puzzle using BFS
+       // Solve puzzle using BFS
         PuzzleGraph puzzle15Graph = new PuzzleGraph(puzzle15);
-        long startTime = System.currentTimeMillis();
         puzzle15Graph.search_BFS();
-        long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
 
-        // Convert milliseconds to seconds with dot and milliseconds
-        double secondsWithDot = elapsedTime / 1000.0;
-        System.out.printf("Time: %.3f seconds%n", secondsWithDot);
-        System.out.println("Number of vertices: " + puzzle15Graph.getNumOfVertices()+"\n");
+        // Create 24-Puzzle with 50 random moves from the solution borad
+        Puzzle puzzle24 = new TwentyFourPuzzle(50);
+        System.out.println(puzzle24);
 
-        // // Create 24-Puzzle with 50 random moves from the solution borad
-        // Puzzle puzzle24 = new TwentyFourPuzzle(50);
-        // System.out.println(puzzle24);
+        // Solve puzzle using BFS
+        PuzzleGraph puzzle24Graph = new PuzzleGraph(puzzle24);
+        puzzle24Graph.search_BFS();
 
-        // // Solve puzzle using BFS
-        // PuzzleGraph puzzle24Graph = new PuzzleGraph(puzzle24);
-        // startTime = System.currentTimeMillis();
-        // puzzle24Graph.search_BFS();
-        // endTime = System.currentTimeMillis();
-        // elapsedTime = endTime - startTime;
-
-        // // Convert milliseconds to seconds with dot and milliseconds
-        // secondsWithDot = elapsedTime / 1000.0;
-        // System.out.printf("Time: %.3f seconds%n", secondsWithDot);
-        // System.out.println("Number of vertices: " + puzzle24Graph.getNumOfVertices());
     }
 }

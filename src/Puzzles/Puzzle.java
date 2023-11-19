@@ -3,10 +3,11 @@ package Puzzles;
 import java.util.*;
 
 public class Puzzle {
-    private int[][] board;
     private final int size;
+    private final int[][] board;
     private int emptyRow;
     private int emptyCol;
+    static final int[][] solution = {{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,0}};
     // Moves
     private static final int UP = 0;
     private static final int DOWN = 1;
@@ -39,12 +40,10 @@ public class Puzzle {
         this.emptyCol = other.emptyCol;
 
         for (int i = 0; i < size; i++) {
-            System.arraycopy(other.board[i], 0, this.board[i], 0, size);
+            for (int j=0;j<size;j++){
+                this.board[i][j] = other.board[i][j];
+            }
         }
-    }
-
-    public PuzzleGraph getPuzzleGraph() {
-        return new PuzzleGraph(this);
     }
 
     private boolean isValidBoard(int[][] board) {
@@ -78,29 +77,30 @@ public class Puzzle {
     }
 
     private boolean isSolvable(int[] flatBoard) {
-        // Helper method to check if the permutation is solvable
-        int inversions = 0;
+        // // Helper method to check if the permutation is solvable
+        // int inversions = 0;
     
-        for (int i = 0; i < flatBoard.length - 1; i++) {
-            for (int j = i + 1; j < flatBoard.length; j++) {
-                if (flatBoard[i] > flatBoard[j] && flatBoard[i] != 0 && flatBoard[j] != 0) {
-                    inversions++;
-                }
-            }
-        }
+        // for (int i = 0; i < flatBoard.length - 1; i++) {
+        //     for (int j = i + 1; j < flatBoard.length; j++) {
+        //         if (flatBoard[i] > flatBoard[j] && flatBoard[i] != 0 && flatBoard[j] != 0) {
+        //             inversions++;
+        //         }
+        //     }
+        // }
     
-        // For a 4x4 board, check the row number of the empty space
-        int emptyRow = 0;
-        for (int i = 0; i < flatBoard.length; i++) {
-            if (flatBoard[i] == 0) {
-                emptyRow = size - 1 - i / size;  // Fix the calculation here
-                break;
-            }
-        }
+        // // For a 4x4 board, check the row number of the empty space
+        // int emptyRow = 0;
+        // for (int i = 0; i < flatBoard.length; i++) {
+        //     if (flatBoard[i] == 0) {
+        //         emptyRow = size - 1 - i / size;  // Fix the calculation here
+        //         break;
+        //     }
+        // }
     
-        // The puzzle is solvable if the number of inversions is even or if the empty space
-        // is on an even row counting from the bottom (1-based index)
-        return (inversions % 2 == 0 && size % 2 == 1) || ((inversions + emptyRow) % 2 == 0 && size % 2 == 0);
+        // // The puzzle is solvable if the number of inversions is even or if the empty space
+        // // is on an even row counting from the bottom (1-based index)
+        // return (inversions % 2 == 0 && size % 2 == 1) || ((inversions + emptyRow) % 2 == 0 && size % 2 == 0);
+        return Arrays.deepEquals(board, solution);
     }
     
 
@@ -154,7 +154,6 @@ public class Puzzle {
         if (n > 0) {
             makeRandomMoves(n);
         }
-        System.out.println("Is valid board state: "+isValidBoard(board));
     }
 
     private void makeRandomMoves(int n) {
@@ -261,10 +260,8 @@ public class Puzzle {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Arrays.deepHashCode(board);
         result = prime * result + size;
-        result = prime * result + emptyRow;
-        result = prime * result + emptyCol;
+        result = prime * result + Arrays.deepHashCode(board);
         return result;
     }
 
@@ -277,27 +274,26 @@ public class Puzzle {
         if (getClass() != obj.getClass())
             return false;
         Puzzle other = (Puzzle) obj;
-        if (!Arrays.deepEquals(board, other.board))
-            return false;
         if (size != other.size)
             return false;
-        if (emptyRow != other.emptyRow)
-            return false;
-        if (emptyCol != other.emptyCol)
+        if (!Arrays.deepEquals(board, other.board))
             return false;
         return true;
     }
 
     public static void main(String[] args) {
         // Test 15-puzzle
-        Puzzle puzzle15 = new Puzzle(4, 1);
+        Puzzle puzzle15 = new Puzzle(4, 0);
         System.out.println(puzzle15);
         // Test 24-puzzle
-        Puzzle puzzle24 = new Puzzle(5, 1);
+        Puzzle puzzle24 = new Puzzle(5, 0);
         System.out.println(puzzle24);
         // Test 35-puzzle
-        Puzzle puzzle35 = new Puzzle(6, 1);
+        Puzzle puzzle35 = new Puzzle(6, 0);
         System.out.println(puzzle35);
+        // Test 48-puzzle
+        Puzzle puzzle48 = new Puzzle(7, 0);
+        System.out.println(puzzle48);
     }
 
 }
