@@ -1,4 +1,4 @@
-## Puzzles Solver with Search Algorithms
+# Puzzles Solver with Search Algorithms
 
 This repository contains an implementation of the popular 15-puzzle and 24-puzzle problem-solving using Breadth-First Search (BFS), Dijkstra's algorithm, and A* algorithm.
 
