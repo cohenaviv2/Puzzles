@@ -1,18 +1,14 @@
-## Getting Started
+## Puzzles Solver with Search Algorithms
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+This repository contains an implementation of the popular 15-puzzle and 24-puzzle problem-solving using Breadth-First Search (BFS), Dijkstra's algorithm, and A* algorithm.
 
-## Folder Structure
+## Key Features:
 
-The workspace contains two folders by default, where:
+- Efficient implementations of BFS, Dijkstra, and A* algorithms tailored for puzzle-solving scenarios.
+- Puzzle state representation, exploration, and graph creation.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Usage:
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+1. Explore different puzzle-solving algorithms for the 15-puzzle and 24-puzzle.
+2. Visualize the search process and observe the optimal path to the solution.
+3. Experiment with variations of initial puzzle states.
