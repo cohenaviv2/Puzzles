@@ -29,6 +29,7 @@ public class PuzzleGraph {
             Set<Puzzle> visited = new HashSet<>();
 
             int startId = puzzleGraph.addVertex();
+            puzzleGraph.getVertex(startId).setPi(null);
             puzzleStates.put(startId, initialPuzzle);
             queue.offer(startId);
             visited.add(initialPuzzle);
@@ -48,8 +49,9 @@ public class PuzzleGraph {
                 for (Puzzle nextPuzzle : nextStates) {
                     if (!visited.contains(nextPuzzle)) {
                         int nextId = puzzleGraph.addVertex();
+                        puzzleGraph.getVertex(nextId).setPi(puzzleGraph.getVertex(currentId));
                         puzzleStates.put(nextId, nextPuzzle);
-                        puzzleGraph.addUndirectedEdge(currentId, nextId, 0);
+                        puzzleGraph.addUndirectedEdge(currentId, nextId);
                         if (nextPuzzle.isSolved()) {
                             queue.addFirst(nextId);
                         } else {
@@ -77,6 +79,20 @@ public class PuzzleGraph {
         sb.append("Time: " + elapsedTime() + " seconds\n");
         sb.append("Memory Used: " + memoryUsage() + " MB\n");
         sb.append("Soultion vertex ID: " + solutionId + "\n");
+        sb.append("Solution path:");
+        Vertex v = puzzleGraph.getVertex(solutionId);
+        int cnt= 0;
+        while (v.getPi() != null) {
+            sb.append(v.ID);
+            if (v.getPi().getPi() != null) {
+                cnt++;
+                sb.append("->");
+            } else {
+                sb.append("\n");
+            }
+            v = v.getPi();
+        }
+        sb.append("Num of vertices in the solution path: "+cnt+"\n");
         System.out.println(sb.toString());
     }
 
@@ -121,20 +137,20 @@ public class PuzzleGraph {
     public static void main(String[] args) {
 
         // Create 15-Puzzle with 50 random moves from the solution borad
-        Puzzle puzzle15 = new FifteenPuzzle(50);
+        Puzzle puzzle15 = new FifteenPuzzle(10);
         System.out.println(puzzle15);
 
        // Solve puzzle using BFS
         PuzzleGraph puzzle15Graph = new PuzzleGraph(puzzle15);
         puzzle15Graph.search_BFS();
 
-        // Create 24-Puzzle with 50 random moves from the solution borad
-        Puzzle puzzle24 = new TwentyFourPuzzle(50);
-        System.out.println(puzzle24);
+        // // Create 24-Puzzle with 50 random moves from the solution borad
+        // Puzzle puzzle24 = new TwentyFourPuzzle(50);
+        // System.out.println(puzzle24);
 
-        // Solve puzzle using BFS
-        PuzzleGraph puzzle24Graph = new PuzzleGraph(puzzle24);
-        puzzle24Graph.search_BFS();
+        // // Solve puzzle using BFS
+        // PuzzleGraph puzzle24Graph = new PuzzleGraph(puzzle24);
+        // puzzle24Graph.search_BFS();
 
     }
 }

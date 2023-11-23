@@ -4,37 +4,37 @@ import java.util.*;
 
 public class Vertex {
     public final int ID;
-    private Map<Vertex, Double> adj; // Neighbor to Weight
+    private List<Vertex> adj; // Neighbor to Weight
     private Vertex pi;
     private int distance;
     private int heuristic;
 
     public Vertex(int id) {
         ID = id;
-        this.adj = new HashMap<>();
+        this.adj = new ArrayList<>();
     }
 
     public List<Vertex> getNeighbors() {
-        return Collections.unmodifiableList(new ArrayList<>(adj.keySet()));
+        return Collections.unmodifiableList(new ArrayList<>(adj));
     }    
 
-    public void addNeighbor(Vertex neighbor, double weight) {
-        if (!adj.containsKey(neighbor) || neighbor != this) {
-            adj.put(neighbor, weight);
+    public void addNeighbor(Vertex neighbor) {
+        if (!adj.contains(neighbor) || neighbor != this) {
+            adj.add(neighbor);
         }
     }
 
-    public double getWeight(Vertex neighbor) {
-        if (adj.containsKey(neighbor)) {
-            return adj.get(neighbor);
-        } else {
-            return Double.MAX_VALUE;
-        }
-    }
+    // public double getWeight(Vertex neighbor) {
+    //     if (adj.contains(neighbor)) {
+    //         return adj.get(neighbor);
+    //     } else {
+    //         return Double.MAX_VALUE;
+    //     }
+    // }
 
-    public void setWeight(Vertex neighbor, double weight) {
-        adj.put(neighbor, weight);
-    }
+    // public void setWeight(Vertex neighbor, double weight) {
+    //     adj.put(neighbor, weight);
+    // }
 
     public int getDistance() {
         return distance;

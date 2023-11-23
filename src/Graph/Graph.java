@@ -17,14 +17,14 @@ public class Graph {
         return count;
     }
 
-    public void addUndirectedEdge(Integer v1, Integer v2, double weight) {
-        if (v1 < 1 || v1 > vertices.size() || v2 < 1 || v2 > vertices.size()) {
+    public void addUndirectedEdge(Integer v1, Integer v2) {
+        if (v1-1 < 0 || v1-1 >= vertices.size() || v2-1 < 0 || v2-1 >= vertices.size()) {
             throw new IllegalArgumentException("Vertex not found in the graph.");
         }
 
         // Add undirected edge
-        vertices.get(v1 - 1).addNeighbor(vertices.get(v2 - 1), weight);
-        vertices.get(v2 - 1).addNeighbor(vertices.get(v1 - 1), weight);
+        vertices.get(v1 - 1).addNeighbor(vertices.get(v2 - 1));
+        vertices.get(v2 - 1).addNeighbor(vertices.get(v1 - 1));
     }
 
     public Map<Integer, Integer> getDistances() {
@@ -44,8 +44,8 @@ public class Graph {
     }
 
     public Vertex getVertex(int id) {
-        if (id < 1 || id > vertices.size()) {
-            throw new IllegalArgumentException("Vertex not found in the graph.");
+        if (id-1 < 0 || id-1 >= vertices.size()) {
+            throw new IllegalArgumentException("Vertex not found in the graph: "+id);
         }
         return vertices.get(id - 1);
     }
@@ -91,9 +91,12 @@ public class Graph {
             int n2 = rand.nextInt(20) + 1;
             while (n1 == n2)
                 n2 = rand.nextInt(20) + 1;
-            g.addUndirectedEdge(n1, n2, 0);
+            g.addUndirectedEdge(n1, n2);
         }
 
         System.out.println(g);
+         for (int i = 0; i < 21; i++) {
+            System.out.println(g.getVertex(i+1));
+        }
     }
 }
