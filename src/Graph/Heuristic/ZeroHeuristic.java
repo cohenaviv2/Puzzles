@@ -4,7 +4,7 @@ import Puzzles.Puzzle;
 
 public class ZeroHeuristic implements HeuristicFunction {
         @Override
-    public int calculate(Puzzle puzzle) {
+    public double calculate(Puzzle puzzle) {
         // Zero heuristic (always returns 0)
         return 0;
     }

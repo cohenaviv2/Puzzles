@@ -6,8 +6,8 @@ public class Vertex {
     public final int ID;
     private List<Vertex> adj; // Neighbor to Weight
     private Vertex pi;
-    private int distance;
-    private int heuristic;
+    private int g;
+    private double h;
 
     public Vertex(int id) {
         ID = id;
@@ -24,24 +24,12 @@ public class Vertex {
         }
     }
 
-    // public double getWeight(Vertex neighbor) {
-    //     if (adj.contains(neighbor)) {
-    //         return adj.get(neighbor);
-    //     } else {
-    //         return Double.MAX_VALUE;
-    //     }
-    // }
-
-    // public void setWeight(Vertex neighbor, double weight) {
-    //     adj.put(neighbor, weight);
-    // }
-
-    public int getDistance() {
-        return distance;
+    public int getG() {
+        return g;
     }
 
-    public void setDistance(int distance) {
-        this.distance = distance;
+    public void setG(int distance) {
+        this.g = distance;
     }
 
     public Vertex getPi() {
@@ -52,16 +40,16 @@ public class Vertex {
         this.pi = predecessor;
     }
 
-    public int getFunction() {
-        return distance + heuristic;
+    public double getFunction() {
+        return g + h;
     }
 
-    public int getHeuristic() {
-        return heuristic;
+    public double getH() {
+        return h;
     }
 
-    public void setHeuristic(int heuristic) {
-        this.heuristic = heuristic;
+    public void setH(double heuristic) {
+        this.h = heuristic;
     }
 
     @Override

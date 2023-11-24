@@ -4,7 +4,7 @@ import Puzzles.Puzzle;
 
 public class ManhattanDistanceHeuristic implements HeuristicFunction {
         @Override
-    public int calculate(Puzzle puzzle) {
+    public double calculate(Puzzle puzzle) {
         int distance = 0;
         int size = puzzle.getSize();
 

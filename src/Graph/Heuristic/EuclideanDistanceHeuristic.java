@@ -3,8 +3,8 @@ package Graph.Heuristic;
 import Puzzles.Puzzle;
 
 public class EuclideanDistanceHeuristic implements HeuristicFunction {
-        @Override
-    public int calculate(Puzzle puzzle) {
+    @Override
+    public double calculate(Puzzle puzzle) {
         int distance = 0;
         int size = puzzle.getSize();
 
@@ -14,11 +14,12 @@ public class EuclideanDistanceHeuristic implements HeuristicFunction {
 
                 if (value != 0) {
                     int[] goalCoordinates = puzzle.getCoordinates(value);
-                    distance += Math.sqrt(Math.pow(i - goalCoordinates[0], 2) + Math.pow(j - goalCoordinates[1], 2));
+                    distance += Math.pow(i - goalCoordinates[0], 2) + Math.pow(j - goalCoordinates[1], 2);
                 }
             }
         }
 
-        return (int) distance;
+        return Math.sqrt(distance);
     }
 }
+

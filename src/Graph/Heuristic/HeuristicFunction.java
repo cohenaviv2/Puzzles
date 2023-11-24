@@ -4,5 +4,5 @@ import Puzzles.Puzzle;
 
 @FunctionalInterface
 public interface HeuristicFunction {
-    int calculate(Puzzle puzzle);
+    double calculate(Puzzle puzzle);
 }

@@ -117,26 +117,7 @@ public class Puzzle {
     } 
 
     public boolean isSolved() {
-        // int count = 1;
-
-        // for (int i = 0; i < size; i++) {
-        //     for (int j = 0; j < size; j++) {
-        //         if (i == size - 1 && j == size - 1) {
-        //             // Check if the last position is empty (0)
-        //             if (board[i][j] != 0) {
-        //                 return false;
-        //             }
-        //         } else {
-        //             // Check if the other positions contain consecutive numbers
-        //             if (board[i][j] != count) {
-        //                 return false;
-        //             }
-        //             count = (count + 1) % (size * size);
-        //         }
-        //     }
-        // }
-        // return true;
-        return Arrays.deepEquals(solution, this.board);
+        return Arrays.deepEquals(this.board, solution);
     }
 
     private void initializeBoard(int[][] startingBoard) {
@@ -303,21 +284,6 @@ public class Puzzle {
         if (!Arrays.deepEquals(board, other.board))
             return false;
         return true;
-    }
-
-    public static void main(String[] args) {
-        // Test 15-puzzle
-        Puzzle puzzle15 = new Puzzle(4, 0);
-        System.out.println(puzzle15);
-        // Test 24-puzzle
-        Puzzle puzzle24 = new Puzzle(5, 0);
-        System.out.println(puzzle24);
-        // Test 35-puzzle
-        Puzzle puzzle35 = new Puzzle(6, 0);
-        System.out.println(puzzle35);
-        // Test 48-puzzle
-        Puzzle puzzle48 = new Puzzle(7, 0);
-        System.out.println(puzzle48);
     }
 
 }

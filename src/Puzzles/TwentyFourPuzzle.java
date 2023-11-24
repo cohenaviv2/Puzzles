@@ -15,11 +15,4 @@ public class TwentyFourPuzzle extends Puzzle {
         super(other);
     }
 
-
-    public static void main(String[] args) {
-        // Test 24-puzzle
-        TwentyFourPuzzle puzzle24 = new TwentyFourPuzzle(0);
-        System.out.println(puzzle24);
-    }
-
 }

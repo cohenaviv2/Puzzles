@@ -30,7 +30,7 @@ public class Graph {
     public Map<Integer, Integer> getDistances() {
         Map<Integer, Integer> distances = new HashMap<>();
         for (Vertex vertex : vertices) {
-            distances.put(vertex.ID, vertex.getDistance());
+            distances.put(vertex.ID, vertex.getG());
         }
         return distances;
     }
@@ -76,27 +76,5 @@ public class Graph {
             graphToString.append("\n");
         }
         return graphToString.toString();
-    }
-
-    public static void main(String[] args) {
-        // Test Graph
-        Graph g = new Graph();
-        for (int i = 0; i < 20; i++) {
-            g.addVertex();
-        }
-
-        Random rand = new Random();
-        for (int i = 0; i < 10; i++) {
-            int n1 = rand.nextInt(20) + 1;
-            int n2 = rand.nextInt(20) + 1;
-            while (n1 == n2)
-                n2 = rand.nextInt(20) + 1;
-            g.addUndirectedEdge(n1, n2);
-        }
-
-        System.out.println(g);
-         for (int i = 0; i < 21; i++) {
-            System.out.println(g.getVertex(i+1));
-        }
     }
 }
