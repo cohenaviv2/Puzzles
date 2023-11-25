@@ -6,26 +6,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "Graph",
-            "request": "launch",
-            "mainClass": "Graph.Graph",
-            "projectName": "Puzzels_15c54bd5"
-        },
-        {
-            "type": "java",
-            "name": "FifteenPuzzle",
-            "request": "launch",
-            "mainClass": "Puzzles.FifteenPuzzle",
-            "projectName": "Puzzels_15c54bd5"
-        },
-        {
-            "type": "java",
             "name": "Puzzle",
             "request": "launch",
             "mainClass": "Puzzles.Puzzle",
@@ -33,16 +13,9 @@
         },
         {
             "type": "java",
-            "name": "PuzzleGraph",
+            "name": "Main",
             "request": "launch",
-            "mainClass": "Puzzles.PuzzleGraph",
-            "projectName": "Puzzels_15c54bd5"
-        },
-        {
-            "type": "java",
-            "name": "TwentyFourPuzzle",
-            "request": "launch",
-            "mainClass": "Puzzles.TwentyFourPuzzle",
+            "mainClass": "Main",
             "projectName": "Puzzels_15c54bd5"
         }
     ]

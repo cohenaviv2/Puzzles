@@ -8,4 +8,8 @@ public class ZeroHeuristic implements HeuristicFunction {
         // Zero heuristic (always returns 0)
         return 0;
     }
+    
+    @Override
+    public void printCache() {
+    }
 }

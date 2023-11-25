@@ -7,13 +7,12 @@ public class Puzzle {
     private final int[][] board;
     private int emptyRow;
     private int emptyCol;
-    static final int[][] solution = {{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,0}};
     // Moves
     private static final int UP = 0;
     private static final int DOWN = 1;
     private static final int LEFT = 2;
     private static final int RIGHT = 3;
-    
+
     public Puzzle(int size, int[][] startingBoard) {
         // Initial with starting board
         this.size = size;
@@ -40,7 +39,7 @@ public class Puzzle {
         this.emptyCol = other.emptyCol;
 
         for (int i = 0; i < size; i++) {
-            for (int j=0;j<size;j++){
+            for (int j = 0; j < size; j++) {
                 this.board[i][j] = other.board[i][j];
             }
         }
@@ -51,13 +50,13 @@ public class Puzzle {
     }
 
     public int[][] getBoard() {
-          // Return a copy of the puzzle board to avoid external modification
-          int size = board.length;
-          int[][] copy = new int[size][];
-          for (int i = 0; i < size; i++) {
-              copy[i] = board[i].clone();
-          }
-          return copy;
+        // Return a copy of the puzzle board to avoid external modification
+        int size = board.length;
+        int[][] copy = new int[size][];
+        for (int i = 0; i < size; i++) {
+            copy[i] = board[i].clone();
+        }
+        return copy;
     }
 
     private boolean isValidBoard(int[][] board) {
@@ -93,7 +92,7 @@ public class Puzzle {
     private boolean isSolvable(int[] flatBoard) {
         // Helper method to check if the permutation is solvable
         int inversions = 0;
-    
+
         for (int i = 0; i < flatBoard.length - 1; i++) {
             for (int j = i + 1; j < flatBoard.length; j++) {
                 if (flatBoard[i] > flatBoard[j] && flatBoard[i] != 0 && flatBoard[j] != 0) {
@@ -101,23 +100,42 @@ public class Puzzle {
                 }
             }
         }
-    
+
         // For a 4x4 board, check the row number of the empty space
         int emptyRow = 0;
         for (int i = 0; i < flatBoard.length; i++) {
             if (flatBoard[i] == 0) {
-                emptyRow = size - 1 - i / size;  // Fix the calculation here
+                emptyRow = size - 1 - i / size; // Fix the calculation here
                 break;
             }
         }
-    
-        // The puzzle is solvable if the number of inversions is even or if the empty space
+
+        // The puzzle is solvable if the number of inversions is even or if the empty
+        // space
         // is on an even row counting from the bottom (1-based index)
         return (inversions % 2 == 0 && size % 2 == 1) || ((inversions + emptyRow) % 2 == 0 && size % 2 == 0);
-    } 
+    }
 
     public boolean isSolved() {
-        return Arrays.deepEquals(this.board, solution);
+        int count = 1;
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (i == size - 1 && j == size - 1) {
+                    // Check if the last position is empty (0)
+                    if (board[i][j] != 0) {
+                        return false;
+                    }
+                } else {
+                    // Check if the other positions contain consecutive numbers
+                    if (board[i][j] != count) {
+                        return false;
+                    }
+                    count = (count + 1) % (size * size);
+                }
+            }
+        }
+        return true;
     }
 
     private void initializeBoard(int[][] startingBoard) {
@@ -237,11 +255,15 @@ public class Puzzle {
         return possibleMoves;
     }
 
-    public int[] getCoordinates(int value) {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == value) {
-                    return new int[]{i, j};
+    public int[] getGoalCoordinates(int value) {
+        int res = 0;
+        if (value == 0) return new int[] {size-1,size-1};
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                res++;
+                if (res == value) {
+                    return new int[] { i, j };
                 }
             }
         }

@@ -13,6 +13,7 @@ public class PuzzleGraph {
     private int solutionId; // Store the ID of the solved puzzle vertex
     private boolean isSolved;
     private long startTime;
+    private List<Integer> path;
 
     public PuzzleGraph(Puzzle initialPuzzle) {
         this.graph = new Graph();
@@ -24,16 +25,15 @@ public class PuzzleGraph {
         if (!isSolved) {
             // Set start time,queue and vistied set
             startTime = System.currentTimeMillis();
-            Queue<Integer> queue = new LinkedList<>(); // Queue of vertex id
+            Queue<Integer> queue = new LinkedList<>(); // vertex id
             Set<Puzzle> visited = new HashSet<>();
 
             // Create starting vertex
             int startId = graph.addVertex();
-            Vertex startVertex = graph.getVertex(startId);
             states.put(startId, initialPuzzle);
 
             // Set pi,visited & Add to the queue
-            startVertex.setPi(null);
+            graph.getVertex(startId).setPi(null);
             queue.offer(startId);
             visited.add(initialPuzzle);
 
@@ -45,18 +45,18 @@ public class PuzzleGraph {
                 if (currentPuzzle.isSolved()) {
                     solutionId = currentId;
                     printSolution(visited.size());
+                    isSolved = true;
                     return;
                 }
 
                 // Generate possible board states
                 List<Puzzle> nextStates = currentPuzzle.generatePossibleMoves();
                 for (Puzzle nextPuzzle : nextStates) {
-                    int nextId = graph.addVertex();
-                    graph.addUndirectedEdge(currentId, nextId);
-                    if (!visited.contains(nextPuzzle)) {
-                        // If state not discovered yet - Set pi, visited & Add to the queue
-                        Vertex nextVertex = graph.getVertex(nextId);
-                        nextVertex.setPi(graph.getVertex(currentId));
+                    if (!visited.contains(nextPuzzle)) { // State not discovered yet
+                        // Create possible state vertex
+                        int nextId = graph.addVertex();
+                        graph.addUndirectedEdge(currentId, nextId);
+                        graph.getVertex(nextId).setPi(graph.getVertex(currentId));
                         states.put(nextId, nextPuzzle);
                         queue.offer(nextId);
                         visited.add(nextPuzzle);
@@ -68,16 +68,17 @@ public class PuzzleGraph {
 
     public void AStarSearch(HeuristicFunction heuristic) {
         if (!isSolved) {
-            // Set start time
+            // Set start time,priority queue and vistied set
             startTime = System.currentTimeMillis();
-
             PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(
-                    Comparator.comparingDouble(id -> graph.getVertex(id).getFunction()));
+                    Comparator.comparingDouble(id -> graph.getVertex(id).getF()));
             Set<Puzzle> visited = new HashSet<>();
 
-            // Create & Add the starting vertex and set pi,g,h
+            // Create starting vertex
             int startId = graph.addVertex();
             Vertex startVertex = graph.getVertex(startId);
+
+            // Set pi,g,h,visited & Add to the queue
             startVertex.setPi(null);
             startVertex.setG(0);
             startVertex.setH(heuristic.calculate(initialPuzzle));
@@ -87,13 +88,16 @@ public class PuzzleGraph {
 
             while (!priorityQueue.isEmpty()) {
                 int currentId = priorityQueue.poll();
-                // updateQueue(priorityQueue);
                 Vertex currentVertex = graph.getVertex(currentId);
                 Puzzle currentPuzzle = states.get(currentId);
 
+
+
                 if (currentPuzzle.isSolved()) {
                     solutionId = currentId;
-                    printSolution(visited.size());
+                    int developedVertices = visited.size();
+                    printSolution(developedVertices);
+                    isSolved = true;
                     return;
                 }
 
@@ -103,7 +107,7 @@ public class PuzzleGraph {
                     int nextId = graph.addVertex();
                     Vertex nextVertex = graph.getVertex(nextId);
                     nextVertex.setPi(currentVertex);
-                    int tentativeG = currentVertex.getG() + 1; // Assuming all edges have weight 1
+                    int tentativeG = currentVertex.getG() + 1; // All edges have weight 1
 
                     if (tentativeG < nextVertex.getG() || !visited.contains(nextPuzzle)) {
                         nextVertex.setG(tentativeG);
@@ -118,33 +122,37 @@ public class PuzzleGraph {
         }
     }
 
-    private void printSolution(int vis) {
+    private void printSolution(int developedVertices) {
         StringBuilder sb = new StringBuilder();
         sb.append("\nSolved!\n\n");
-        sb.append("Number of vertices: " + getNumOfVertices() + "\n");
+        sb.append("Vertices in the Graph: " + getNumOfVertices() + "\n");
         //
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
         // Format the number using the DecimalFormat
-        String formattedNumber = decimalFormat.format(vis);
-        sb.append("visited: " + formattedNumber + "\n");
-        //
+        String formattedNumber = decimalFormat.format(developedVertices);
+        sb.append("Number of developed vertices: " + formattedNumber + "\n");
         sb.append("Time: " + elapsedTime() + " seconds\n");
+        //
         sb.append("Heap Memory Usage: " + memoryUsage() + " MB\n");
         sb.append("Soultion vertex ID: " + solutionId + "\n");
-        sb.append("Solution path:");
-        Vertex v = graph.getVertex(solutionId);
-        int cnt = 0;
-        while (v.getPi() != null) {
-            sb.append(v.ID);
-            if (v.getPi().getPi() != null) {
-                cnt++;
-                sb.append("->");
-            } else {
-                sb.append("\n");
-            }
-            v = v.getPi();
+        path = new ArrayList<>();
+        int currentId = solutionId;
+        while (currentId != -1) {
+            path.add(currentId);
+            currentId = graph.getVertex(currentId).getPi() != null ? graph.getVertex(currentId).getPi().ID : -1;
         }
-        sb.append("Number of movements in the solution path: " + cnt + "\n");
+
+        // Print the path in reverse order
+        sb.append("Solution path: ");
+        for (int i = path.size() - 1; i >= 0; i--) {
+            int vertexId = path.get(i);
+            sb.append(vertexId);
+            if (i > 0) {
+                sb.append("->");
+            }
+        }
+        sb.append("\n");
+        sb.append("Number of movements in the solution path: " + (path.size()-1) + "\n");
         System.out.println(sb.toString());
     }
 
@@ -165,20 +173,43 @@ public class PuzzleGraph {
         return String.format("%.3f", secondsWithDot);
     }
 
-    public Graph toGraph() {
-        return graph;
-    }
-
     private String getNumOfVertices() {
-        // Create a DecimalFormat object with the pattern "#,###"
+        // Create a DecimalFormat
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
-        // Format the number using the DecimalFormat
         String formattedNumber = decimalFormat.format(graph.size());
         return formattedNumber;
     }
 
+    public Graph toGraph() {
+        return graph;
+    }
+
     public int getSolutionId() {
-        return solutionId;
+        return isSolved ? solutionId : -1;
+    }
+
+    public void printMovesToSolution() {
+        if (isSolved) {
+            System.out.println("Moves to Solution:\n");
+            Timer timer = new Timer();
+            int totalSteps = path.size();
+
+            for (int i = totalSteps - 1; i >= 0; i--) {
+                final int stepIndex = i;
+
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        int vertexId = path.get(stepIndex);
+                        System.out.println("\nStep " + (totalSteps - stepIndex) + ":\n" + states.get(vertexId));
+
+                        if (stepIndex == 0) {
+                            timer.cancel();
+                        }
+                    }
+                }, (totalSteps - stepIndex) * 1000);
+            }
+        }
     }
 
     @Override
@@ -188,43 +219,30 @@ public class PuzzleGraph {
 
     public static void solveWithDifferentAlgorithms(Puzzle puzzle) {
         // Solve using BFS
-        System.out.println("**** BFS ****");
+        System.out.println("------------------------------------- BFS -------------------------------------");
         PuzzleGraph fifteenPuzzleGraph = new PuzzleGraph(puzzle);
         fifteenPuzzleGraph.breadthFirstSearch();
 
-        // Solve using A* with Manhattan distance
-        System.out.println("****  AStar (Manhattan)  ****");
-        PuzzleGraph fifteenPuzzleGraph2 = new PuzzleGraph(puzzle);
-        fifteenPuzzleGraph2.AStarSearch(new ManhattanDistanceHeuristic());
-        
+        // // Solve using A* with Misplaced tiles heuristic
+        // System.out.println("--------------------------  AStar (Misplaced tiles) --------------------------");
+        // PuzzleGraph fifteenPuzzleGraph5 = new PuzzleGraph(puzzle);
+        // fifteenPuzzleGraph5.AStarSearch(new MisplacedTilesHeuristic());
+
         // Solve using A* with Euclidean distance
-        System.out.println("**** AStar (Euclidean) ****");
+        System.out.println("------------------------------ AStar (Euclidean) ------------------------------");
         PuzzleGraph fifteenPuzzleGraph3 = new PuzzleGraph(puzzle);
         fifteenPuzzleGraph3.AStarSearch(new EuclideanDistanceHeuristic());
-        
+
+        // Solve using A* with Manhattan distance
+        System.out.println("-----------------------------  AStar (Manhattan)  -----------------------------");
+        PuzzleGraph fifteenPuzzleGraph2 = new PuzzleGraph(puzzle);
+        fifteenPuzzleGraph2.AStarSearch(new ManhattanDistanceHeuristic());
+
         // Solve using A* with Zero function
-        System.out.println("**** AStar (Zero func) ****");
+        System.out.println("----------------------------- AStar (Zero func) ------------------------------");
         PuzzleGraph fifteenPuzzleGraph4 = new PuzzleGraph(puzzle);
         fifteenPuzzleGraph4.AStarSearch(new ZeroHeuristic());
 
-        // Solve using A* with Misplaced tiles heuristic
-        System.out.println("****  AStar (Misplaced tiles)  ****");
-        PuzzleGraph fifteenPuzzleGraph5 = new PuzzleGraph(puzzle);
-        fifteenPuzzleGraph5.AStarSearch(new MisplacedTilesHeuristic());
     }
 
-    public static void main(String[] args) {
-        int numOfRuns = 1;
-        int n = 10;
-        
-        // Create 15-Puzzle with n random moves from the solution borad
-        Puzzle fifteenPuzzle = new FifteenPuzzle(n);
-        System.out.println(fifteenPuzzle);
-
-        // 
-        for (int i = 0; i < numOfRuns; i++) {
-            PuzzleGraph.solveWithDifferentAlgorithms(fifteenPuzzle);
-        }
-
-    }
 }

@@ -1,10 +1,19 @@
 package Graph.Heuristic;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import Puzzles.Puzzle;
 
 public class MisplacedTilesHeuristic implements HeuristicFunction {
+    private Map<Puzzle,Integer> heuristicCache = new HashMap<>();
+
       @Override
     public double calculate(Puzzle puzzle) {
+          // Check if the heuristic value is already in the cache
+        if (heuristicCache.containsKey(puzzle)) {
+            return heuristicCache.get(puzzle);
+        }
         int misplacedTiles = 0;
         int size = puzzle.getSize();
 
@@ -18,6 +27,13 @@ public class MisplacedTilesHeuristic implements HeuristicFunction {
             }
         }
 
+        // Cache the computed heuristic value
+        heuristicCache.put(puzzle, misplacedTiles);
         return misplacedTiles;
+    }
+
+    @Override
+    public void printCache() {
+        heuristicCache.forEach((k,v)->System.out.println(v));
     }
 }

@@ -12,6 +12,7 @@ public class Vertex {
     public Vertex(int id) {
         ID = id;
         this.adj = new ArrayList<>();
+        this.pi = null;
     }
 
     public List<Vertex> getNeighbors() {
@@ -40,7 +41,7 @@ public class Vertex {
         this.pi = predecessor;
     }
 
-    public double getFunction() {
+    public double getF() {
         return g + h;
     }
 
