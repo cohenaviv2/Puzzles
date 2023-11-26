@@ -4,16 +4,13 @@ import Graph.*;
 import Graph.Heuristic.*;
 
 import java.util.*;
-import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
 public class PuzzleGraph {
     private Graph graph;
     private Puzzle initialPuzzle;
     private Map<Integer, Puzzle> states; // ID to Puzzle
-    private int solutionId; // Store the ID of the solved puzzle vertex
     private boolean isSolved;
-    private long startTime;
-    private List<Integer> path;
 
     public PuzzleGraph(Puzzle initialPuzzle) {
         this.graph = new Graph();
@@ -21,10 +18,10 @@ public class PuzzleGraph {
         this.states = new HashMap<>();
     }
 
-    public void breadthFirstSearch() {
+    public Solution breadthFirstSearch() {
         if (!isSolved) {
             // Set start time,queue and vistied set
-            startTime = System.currentTimeMillis();
+            long startTime = System.nanoTime();
             Queue<Integer> queue = new LinkedList<>(); // vertex id
             Set<Puzzle> visited = new HashSet<>();
 
@@ -43,10 +40,9 @@ public class PuzzleGraph {
 
                 // Algorithm requires a stopping condition (solution space is exponential)
                 if (currentPuzzle.isSolved()) {
-                    solutionId = currentId;
-                    printSolution(visited.size());
+                    System.out.println("\nSolved!\n");
                     isSolved = true;
-                    return;
+                    return new Solution(graph, startTime, visited.size(), currentId, states);
                 }
 
                 // Generate possible board states
@@ -64,12 +60,13 @@ public class PuzzleGraph {
                 }
             }
         }
+        return null;
     }
 
-    public void AStarSearch(HeuristicFunction heuristic) {
+    public Solution AStarSearch(HeuristicFunction heuristic) {
         if (!isSolved) {
             // Set start time,priority queue and vistied set
-            startTime = System.currentTimeMillis();
+            long startTime = System.nanoTime();
             PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(
                     Comparator.comparingDouble(id -> graph.getVertex(id).getF()));
             Set<Puzzle> visited = new HashSet<>();
@@ -91,14 +88,10 @@ public class PuzzleGraph {
                 Vertex currentVertex = graph.getVertex(currentId);
                 Puzzle currentPuzzle = states.get(currentId);
 
-
-
                 if (currentPuzzle.isSolved()) {
-                    solutionId = currentId;
-                    int developedVertices = visited.size();
-                    printSolution(developedVertices);
+                    System.out.println("\nSolved!\n");
                     isSolved = true;
-                    return;
+                    return new Solution(graph, startTime, visited.size(), currentId, states);
                 }
 
                 List<Puzzle> nextStates = currentPuzzle.generatePossibleMoves();
@@ -120,129 +113,53 @@ public class PuzzleGraph {
                 }
             }
         }
-    }
-
-    private void printSolution(int developedVertices) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\nSolved!\n\n");
-        sb.append("Vertices in the Graph: " + getNumOfVertices() + "\n");
-        //
-        DecimalFormat decimalFormat = new DecimalFormat("#,###");
-        // Format the number using the DecimalFormat
-        String formattedNumber = decimalFormat.format(developedVertices);
-        sb.append("Number of developed vertices: " + formattedNumber + "\n");
-        sb.append("Time: " + elapsedTime() + " seconds\n");
-        //
-        sb.append("Heap Memory Usage: " + memoryUsage() + " MB\n");
-        sb.append("Soultion vertex ID: " + solutionId + "\n");
-        path = new ArrayList<>();
-        int currentId = solutionId;
-        while (currentId != -1) {
-            path.add(currentId);
-            currentId = graph.getVertex(currentId).getPi() != null ? graph.getVertex(currentId).getPi().ID : -1;
-        }
-
-        // Print the path in reverse order
-        sb.append("Solution path: ");
-        for (int i = path.size() - 1; i >= 0; i--) {
-            int vertexId = path.get(i);
-            sb.append(vertexId);
-            if (i > 0) {
-                sb.append("->");
-            }
-        }
-        sb.append("\n");
-        sb.append("Number of movements in the solution path: " + (path.size()-1) + "\n");
-        System.out.println(sb.toString());
-    }
-
-    private String memoryUsage() {
-        Runtime runtime = Runtime.getRuntime();
-        double memoryUsedInBytes = runtime.totalMemory() - runtime.freeMemory();
-        double memoryUsedInMegabytes = memoryUsedInBytes / (1024 * 1024);
-
-        // Format the result to have a dot and three digits
-        return String.format("%.2f", memoryUsedInMegabytes);
-    }
-
-    private String elapsedTime() {
-        long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
-        // Convert milliseconds to seconds with dot and milliseconds
-        double secondsWithDot = elapsedTime / 1000.0;
-        return String.format("%.3f", secondsWithDot);
-    }
-
-    private String getNumOfVertices() {
-        // Create a DecimalFormat
-        DecimalFormat decimalFormat = new DecimalFormat("#,###");
-        String formattedNumber = decimalFormat.format(graph.size());
-        return formattedNumber;
+        return null;
     }
 
     public Graph toGraph() {
         return graph;
     }
 
-    public int getSolutionId() {
-        return isSolved ? solutionId : -1;
-    }
-
-    public void printMovesToSolution() {
-        if (isSolved) {
-            System.out.println("Moves to Solution:\n");
-            Timer timer = new Timer();
-            int totalSteps = path.size();
-
-            for (int i = totalSteps - 1; i >= 0; i--) {
-                final int stepIndex = i;
-
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        int vertexId = path.get(stepIndex);
-                        System.out.println("\nStep " + (totalSteps - stepIndex) + ":\n" + states.get(vertexId));
-
-                        if (stepIndex == 0) {
-                            timer.cancel();
-                        }
-                    }
-                }, (totalSteps - stepIndex) * 1000);
-            }
-        }
-    }
-
-    @Override
-    public String toString() {
-        return graph.toString();
-    }
-
-    public static void solveWithDifferentAlgorithms(Puzzle puzzle) {
+    public static void solveWithDifferentAlgorithms(Puzzle puzzle, boolean printSolutions, TimeUnit timeUnit) {
         // Solve using BFS
         System.out.println("------------------------------------- BFS -------------------------------------");
         PuzzleGraph fifteenPuzzleGraph = new PuzzleGraph(puzzle);
-        fifteenPuzzleGraph.breadthFirstSearch();
-
-        // // Solve using A* with Misplaced tiles heuristic
-        // System.out.println("--------------------------  AStar (Misplaced tiles) --------------------------");
-        // PuzzleGraph fifteenPuzzleGraph5 = new PuzzleGraph(puzzle);
-        // fifteenPuzzleGraph5.AStarSearch(new MisplacedTilesHeuristic());
-
-        // Solve using A* with Euclidean distance
-        System.out.println("------------------------------ AStar (Euclidean) ------------------------------");
-        PuzzleGraph fifteenPuzzleGraph3 = new PuzzleGraph(puzzle);
-        fifteenPuzzleGraph3.AStarSearch(new EuclideanDistanceHeuristic());
-
-        // Solve using A* with Manhattan distance
-        System.out.println("-----------------------------  AStar (Manhattan)  -----------------------------");
-        PuzzleGraph fifteenPuzzleGraph2 = new PuzzleGraph(puzzle);
-        fifteenPuzzleGraph2.AStarSearch(new ManhattanDistanceHeuristic());
+        Solution bfsSolution = fifteenPuzzleGraph.breadthFirstSearch();
+        if (printSolutions) {
+            bfsSolution.printSolution(timeUnit);
+        }
 
         // Solve using A* with Zero function
         System.out.println("----------------------------- AStar (Zero func) ------------------------------");
         PuzzleGraph fifteenPuzzleGraph4 = new PuzzleGraph(puzzle);
-        fifteenPuzzleGraph4.AStarSearch(new ZeroHeuristic());
+        Solution astarSolution1 = fifteenPuzzleGraph4.AStarSearch(new ZeroHeuristic());
+        if (printSolutions) {
+            astarSolution1.printSolution(timeUnit);
+        }
 
+        // Solve using A* with Manhattan distance
+        System.out.println("-----------------------------  AStar (Manhattan)  -----------------------------");
+        PuzzleGraph fifteenPuzzleGraph2 = new PuzzleGraph(puzzle);
+        Solution astarSolution2 = fifteenPuzzleGraph2.AStarSearch(new ManhattanDistanceHeuristic());
+        if (printSolutions) {
+            astarSolution2.printSolution(timeUnit);
+        }
+
+        // Solve using A* with number of misplaced tiles
+        System.out.println("-------------------------- AStar (Misplaced tiles) --------------------------");
+        PuzzleGraph fifteenPuzzleGraph5 = new PuzzleGraph(puzzle);
+        Solution astarSolution3 = fifteenPuzzleGraph5.AStarSearch(new MisplacedTilesHeuristic());
+        if (printSolutions) {
+            astarSolution3.printSolution(timeUnit);
+        }
+
+        // Solve using A* with Non-Admissible heursitic
+        System.out.println("------------------------------ AStar (Non-Admissible) ------------------------------");
+        PuzzleGraph fifteenPuzzleGraph3 = new PuzzleGraph(puzzle);
+        Solution astarSolution4 =  fifteenPuzzleGraph3.AStarSearch(new NonAdmissibleHeuristic());
+        if (printSolutions) {
+            astarSolution4.printSolution(timeUnit);
+        }
     }
 
 }
