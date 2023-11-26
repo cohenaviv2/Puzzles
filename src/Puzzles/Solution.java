@@ -7,6 +7,7 @@ import java.util.*;
 import Graph.Graph;
 
 public class Solution {
+    private final Graph graph;
     private final int numOfVertices;
     private final int developedVertices;
     private final long elapsedTime;
@@ -18,7 +19,8 @@ public class Solution {
 
     public Solution(Graph graph, long startTime, int developedVertices, int solutionVertexId,
             Map<Integer, Puzzle> states) {
-        this.numOfVertices = graph.size();
+        this.graph = graph;
+        this.numOfVertices = this.graph.size();
         this.developedVertices = developedVertices;
         this.solutionVertexId = solutionVertexId;
         // Elapsed Time
@@ -34,7 +36,7 @@ public class Solution {
         int currentId = solutionVertexId;
         while (currentId != -1) {
             path.add(currentId);
-            currentId = graph.getVertex(currentId).getPi() != null ? graph.getVertex(currentId).getPi().ID : -1;
+            currentId = this.graph.getVertex(currentId).getPi() != null ? this.graph.getVertex(currentId).getPi().ID : -1;
         }
         this.numOfMovements = path.size() - 1;
         // Movements to Solution
@@ -46,11 +48,11 @@ public class Solution {
         }
     }
 
-    public void printSolution(TimeUnit timeUnit) {
+    public void print(TimeUnit timeUnit) {
         StringBuilder sb = new StringBuilder();
         sb.append("Vertices in the Graph: " + getFormattedNumber(numOfVertices) + "\n");
         sb.append("Developed vertices: " + getFormattedNumber(developedVertices) + "\n");
-        sb.append("Time: " + getElapsedTime(timeUnit) + " " + timeUnit.name().toLowerCase() + "\n");
+        sb.append("Time: " + getElapsedTime(timeUnit,elapsedTime) + " " + timeUnit.name().toLowerCase() + "\n");
         sb.append("Heap Memory Usage: " + memoryUsage + " MB\n");
         sb.append("Soultion vertex ID: " + solutionVertexId + "\n");
         // Print the path in reverse order
@@ -88,14 +90,14 @@ public class Solution {
         }
     }
 
-    private String getFormattedNumber(int number) {
+    private static String getFormattedNumber(int number) {
         // Create a DecimalFormat
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
         String formattedNumber = decimalFormat.format(number);
         return formattedNumber;
     }
 
-    private String getElapsedTime(TimeUnit timeUnit) {
+    private static String getElapsedTime(TimeUnit timeUnit, long elapsedTime) {
         switch (timeUnit) {
             case SECONDS:
                 double secondsWithDot = elapsedTime / 1e9;
@@ -110,4 +112,29 @@ public class Solution {
                 throw new IllegalArgumentException("Invalid time unit: " + timeUnit);
         }
     }
+
+    public Graph toGraph() {
+        return graph;
+    }
+
+    public int getNumOfVertices() {
+        return numOfVertices;
+    }
+
+    public int getDevelopedVertices() {
+        return developedVertices;
+    }
+
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public int getSolutionVertexId() {
+        return solutionVertexId;
+    }
+
+    public int getNumOfMovements() {
+        return numOfMovements;
+    }
+
 }

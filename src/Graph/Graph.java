@@ -77,4 +77,12 @@ public class Graph {
         }
         return graphToString.toString();
     }
+
+    public void clear() {
+        for (Vertex v : vertices){
+            v.clear();
+        }
+        this.vertices.clear();
+        this.count = 0;
+    }
 }

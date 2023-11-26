@@ -72,4 +72,7 @@ public class Vertex {
         return true;
     }
 
+    public void clear() {
+        adj.clear();
+    }
 }
