@@ -2,7 +2,17 @@ package Graph.Heuristic;
 
 import Puzzles.Puzzle;
 
-public class ZeroHeuristic implements HeuristicFunction {
+public class ZeroHeuristic implements PuzzleHeuristic {
+     private static ZeroHeuristic instance = null;
+
+    private ZeroHeuristic(){
+
+    }
+    public static ZeroHeuristic get() {
+        if (instance == null)
+            instance = new ZeroHeuristic();
+        return instance;
+    }
         @Override
     public double calculate(Puzzle puzzle) {
         // Zero heuristic (always returns 0)

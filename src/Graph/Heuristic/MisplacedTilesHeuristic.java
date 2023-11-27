@@ -5,8 +5,19 @@ import java.util.Map;
 
 import Puzzles.Puzzle;
 
-public class MisplacedTilesHeuristic implements HeuristicFunction {
+public class MisplacedTilesHeuristic implements PuzzleHeuristic {
     private Map<Puzzle,Integer> heuristicCache = new HashMap<>();
+    private static MisplacedTilesHeuristic instance = null;
+
+    private MisplacedTilesHeuristic(){
+        this.heuristicCache = new HashMap<>();
+    }
+
+    public static MisplacedTilesHeuristic get() {
+        if (instance == null)
+            instance = new MisplacedTilesHeuristic();
+        return instance;
+    }
 
       @Override
     public double calculate(Puzzle puzzle) {
@@ -34,6 +45,10 @@ public class MisplacedTilesHeuristic implements HeuristicFunction {
 
     @Override
     public void printCache() {
-        heuristicCache.forEach((k,v)->System.out.println(v));
+             // Print cached sequences
+             heuristicCache.forEach((k, v) -> {
+                System.out.println("Puzzle:\n" + k);
+                System.out.println("Misplaced Tiles: " + v+"\n");
+            });
     }
 }

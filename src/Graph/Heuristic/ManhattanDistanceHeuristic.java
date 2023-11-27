@@ -5,8 +5,19 @@ import java.util.Map;
 
 import Puzzles.Puzzle;
 
-public class ManhattanDistanceHeuristic implements HeuristicFunction {
-    private Map<Puzzle, Integer> heuristicCache = new HashMap<>();
+public class ManhattanDistanceHeuristic implements PuzzleHeuristic {
+    private Map<Puzzle, Integer> heuristicCache;
+    private static ManhattanDistanceHeuristic instance = null;
+
+    private ManhattanDistanceHeuristic(){
+        this.heuristicCache = new HashMap<>();
+    }
+
+    public static ManhattanDistanceHeuristic get() {
+        if (instance == null)
+            instance = new ManhattanDistanceHeuristic();
+        return instance;
+    }
 
     @Override
     public double calculate(Puzzle puzzle) {
@@ -35,6 +46,10 @@ public class ManhattanDistanceHeuristic implements HeuristicFunction {
 
     @Override
     public void printCache() {
-        heuristicCache.forEach((k, v) -> System.out.println(v));
+        // Print cached sequences
+        heuristicCache.forEach((k, v) -> {
+            System.out.println("Puzzle:\n" + k);
+            System.out.println("Manhattan Distance: " + v+"\n");
+        });
     }
 }

@@ -53,15 +53,15 @@ public class PuzzleGraph {
                     graph.addUndirectedEdge(currentId, nextId);
                     graph.getVertex(nextId).setPi(graph.getVertex(currentId));
                     states.put(nextId, nextPuzzle);
-                    queue.offer(nextId);
                     visited.add(nextPuzzle);
+                    queue.offer(nextId);
                 }
             }
         }
         return null;
     }
 
-    public Solution AStarSearch(Puzzle puzzle, HeuristicFunction heuristic) {
+    public Solution AStarSearch(Puzzle puzzle, PuzzleHeuristic heuristic) {
         this.initialPuzzle = puzzle;
         // Set start time,priority queue and vistied set
         long startTime = System.nanoTime();
@@ -105,9 +105,9 @@ public class PuzzleGraph {
                     nextVertex.setG(tentativeG);
                     nextVertex.setH(heuristic.calculate(nextPuzzle));
                     states.put(nextId, nextPuzzle);
-                    graph.addUndirectedEdge(currentVertex.ID, nextId);
-                    priorityQueue.offer(nextId);
+                    graph.addUndirectedEdge(currentVertex.ID, nextVertex.ID);
                     visited.add(nextPuzzle);
+                    priorityQueue.offer(nextId);
                 }
             }
         }
@@ -119,44 +119,60 @@ public class PuzzleGraph {
         this.states.clear();
     }
 
-    public static void solveWithDifferentAlgorithms(Puzzle puzzle, boolean printSolutions, TimeUnit timeUnit) {
+    public static List<Solution> solveWithDifferentAlgorithms(Puzzle puzzle, boolean print, TimeUnit timeUnit) {
         // Create Puzzle Graph
         PuzzleGraph puzzleGraph = new PuzzleGraph();
+        List<Solution> solutionsList = new ArrayList<>();
 
         // Solve using BFS
-        System.out.println("------------------------------------- BFS -------------------------------------");
         Solution bfsSolution = puzzleGraph.breadthFirstSearch(puzzle);
-        if (printSolutions) {
+        solutionsList.add(bfsSolution);
+        if (print) {
+            System.out.println("------------------------------------- BFS -------------------------------------");
             bfsSolution.print(timeUnit);
         }
 
         // Solve using A* with Zero function
-        System.out.println("----------------------------- AStar (Zero func) ------------------------------");
-        Solution astarSolution1 = puzzleGraph.AStarSearch(puzzle, new ZeroHeuristic());
-        if (printSolutions) {
+        Solution astarSolution1 = puzzleGraph.AStarSearch(puzzle, Heuristics.Zero_Heuristic);
+        solutionsList.add(astarSolution1);
+        if (print) {
+            System.out.println("----------------------------- AStar (Zero func) ------------------------------");
             astarSolution1.print(timeUnit);
         }
 
         // Solve using A* with Manhattan distance
-        System.out.println("-----------------------------  AStar (Manhattan)  -----------------------------");
-        Solution astarSolution2 = puzzleGraph.AStarSearch(puzzle, new ManhattanDistanceHeuristic());
-        if (printSolutions) {
+        Solution astarSolution2 = puzzleGraph.AStarSearch(puzzle, Heuristics.Manhattan_Distance);
+        solutionsList.add(astarSolution2);
+        if (print) {
+            System.out.println("-----------------------------  AStar (Manhattan)  -----------------------------");
             astarSolution2.print(timeUnit);
         }
 
-        // Solve using A* with number of misplaced tiles
-        System.out.println("-------------------------- AStar (Misplaced tiles) --------------------------");
-        Solution astarSolution3 = puzzleGraph.AStarSearch(puzzle, new MisplacedTilesHeuristic());
-        if (printSolutions) {
-            astarSolution3.print(timeUnit);
-        }
+        //         // Solve using A* with Euclidean distance
+        // Solution astarSolution5 = puzzleGraph.AStarSearch(puzzle, Heuristics.Euclidean_Distance);
+        // solutionsList.add(astarSolution5);
+        // if (print) {
+            // System.out.println("-----------------------------  AStar (Euclidean)  -----------------------------");
+        //     astarSolution5.print(timeUnit);
+        // }
+
+        // // Solve using A* with number of misplaced tiles
+        // Solution astarSolution3 = puzzleGraph.AStarSearch(puzzle, Heuristics.Misplaced_Tiles);
+        // solutionsList.add(astarSolution3);
+        // if (print) {
+            // System.out.println("-------------------------- AStar (Misplaced tiles) --------------------------");
+        //     astarSolution3.print(timeUnit);
+        // }
 
         // Solve using A* with Non-Admissible heursitic
-        System.out.println("------------------------------ AStar (Non-Admissible) ------------------------------");
-        Solution astarSolution4 = puzzleGraph.AStarSearch(puzzle, new NonAdmissibleHeuristic());
-        if (printSolutions) {
+        Solution astarSolution4 = puzzleGraph.AStarSearch(puzzle, Heuristics.Nilsson_Sequence);
+        solutionsList.add(astarSolution4);
+        if (print) {
+            System.out.println("-------------------------- AStar (Nilsson's Sequence) --------------------------");
             astarSolution4.print(timeUnit);
         }
+
+        return solutionsList;
     }
 
 }

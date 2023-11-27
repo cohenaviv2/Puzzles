@@ -16,6 +16,7 @@ public class Solution {
     private final List<Integer> path;
     private final int numOfMovements;
     private final List<Puzzle> movementsList;
+    private static Solution instance = null;
 
     public Solution(Graph graph, long startTime, int developedVertices, int solutionVertexId,
             Map<Integer, Puzzle> states) {
@@ -71,33 +72,25 @@ public class Solution {
 
     public void printMovesToSolution() {
         System.out.println("Moves to Solution:\n");
-        Timer timer = new Timer();
-        int totalSteps = path.size();
 
-        for (int i = 0; i < totalSteps; i++) {
-            final int stepIndex = i;
-
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    System.out.println("\nStep " + (stepIndex) + ":\n" + movementsList.get(stepIndex));
-
-                    if (stepIndex == 0) {
-                        timer.cancel();
-                    }
-                }
-            }, (totalSteps - stepIndex) * 1000);
+        for (int i = 0; i < path.size(); i++) {
+            if (i==0) {
+                System.out.println("Initial Board:\n");
+            } else {
+                System.out.println("\nStep " +i+ ":");
+            }
+            System.out.println(movementsList.get(i));
         }
     }
 
-    private static String getFormattedNumber(int number) {
+    public static String getFormattedNumber(int number) {
         // Create a DecimalFormat
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
         String formattedNumber = decimalFormat.format(number);
         return formattedNumber;
     }
 
-    private static String getElapsedTime(TimeUnit timeUnit, long elapsedTime) {
+    public static String getElapsedTime(TimeUnit timeUnit, long elapsedTime) {
         switch (timeUnit) {
             case SECONDS:
                 double secondsWithDot = elapsedTime / 1e9;
