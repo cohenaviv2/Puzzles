@@ -2,6 +2,15 @@ package Graph;
 
 import java.util.*;
 
+/* 
+ * This class represent an undirected graph.
+ * The graph implemented as adjacency list - it contains a list of vertices,
+ * each vertex has a unique ID and a list of its neighbors.
+ * 
+ * @author: Aviv Cohen
+ * 
+ */
+
 public class Graph {
     private List<Vertex> vertices;
     private int count;

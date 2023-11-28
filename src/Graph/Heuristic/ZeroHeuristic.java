@@ -5,9 +5,8 @@ import Puzzles.Puzzle;
 public class ZeroHeuristic implements PuzzleHeuristic {
      private static ZeroHeuristic instance = null;
 
-    private ZeroHeuristic(){
-
-    }
+    private ZeroHeuristic(){}
+    
     public static ZeroHeuristic get() {
         if (instance == null)
             instance = new ZeroHeuristic();

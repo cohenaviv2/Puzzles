@@ -2,6 +2,17 @@ package Puzzles;
 
 import java.util.*;
 
+/* 
+ * This class represents nXn puzzle, according to the original 15-puzzle logic.
+ * A Puzzle can be initialized by perforimg n random moves from the solution board,
+ * or with a custom starting board.
+ * Each Puzzle have the ability to perform move, check if its solved
+ * and generate the possible board state from the current board.
+ * 
+ * @author: Aviv Cohen
+ * 
+ */
+
 public class Puzzle {
     private final int size;
     private final int[][] board;
@@ -45,7 +56,7 @@ public class Puzzle {
         }
     }
 
-    public int getSize() {
+    public int size() {
         return this.size;
     }
 
@@ -307,5 +318,7 @@ public class Puzzle {
             return false;
         return true;
     }
+
+
 
 }

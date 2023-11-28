@@ -2,6 +2,15 @@ package Graph;
 
 import java.util.*;
 
+/* 
+ * This class represents a vertex in the graph.
+ * Vertex contains a list of its neighbors,
+ * its predecessor as 'pi', and 'g' & 'h' scores for AStar algorithm.
+ * 
+ * @author: Aviv Cohen
+ * 
+ */
+
 public class Vertex {
     public final int ID;
     private List<Vertex> adj; // Neighbor to Weight
@@ -14,24 +23,16 @@ public class Vertex {
         this.adj = new ArrayList<>();
         this.pi = null;
     }
-
-    public List<Vertex> getNeighbors() {
-        return Collections.unmodifiableList(new ArrayList<>(adj));
-    }    
-
+    
     public void addNeighbor(Vertex neighbor) {
         if (!adj.contains(neighbor) || neighbor != this) {
             adj.add(neighbor);
         }
     }
 
-    public int getG() {
-        return g;
-    }
-
-    public void setG(int distance) {
-        this.g = distance;
-    }
+    public List<Vertex> getNeighbors() {
+        return Collections.unmodifiableList(new ArrayList<>(adj));
+    }    
 
     public Vertex getPi() {
         return pi;
@@ -41,16 +42,24 @@ public class Vertex {
         this.pi = predecessor;
     }
 
-    public double getF() {
-        return g + h;
+    public void setG(int distance) {
+        this.g = distance;
+    }
+
+    public int getG() {
+        return g;
+    }
+
+    public void setH(double heuristic) {
+        this.h = heuristic;
     }
 
     public double getH() {
         return h;
     }
 
-    public void setH(double heuristic) {
-        this.h = heuristic;
+    public double getF() {
+        return g + h;
     }
 
     @Override

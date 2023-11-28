@@ -6,10 +6,20 @@ import Graph.Heuristic.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/* 
+ * This class represent a nXn Puzzle solver, using BFS and AStar algorithms.
+ * These search algorithms solving the puzzle by converting the problem into an undirected graph.
+ * The graph is created dynamically as the search performed on the puzzle,
+ * And finally returns a Solution.
+ * Class also contains a static method to solve a specific puzzle with all the algorithms.
+ * 
+ * @author: Aviv Cohen
+ * 
+ */
+
 public class PuzzleGraph {
     private Graph graph;
-    private Puzzle initialPuzzle;
-    private Map<Integer, Puzzle> states; // ID to Puzzle
+    private Map<Integer, Puzzle> states; // Vertex ID to Puzzle
 
     public PuzzleGraph() {
         this.graph = new Graph();
@@ -17,29 +27,27 @@ public class PuzzleGraph {
     }
 
     public Solution breadthFirstSearch(Puzzle puzzle) {
-        this.initialPuzzle = puzzle;
-        // Set start time,queue and vistied set
+        // Set start time, queue of vertex.ID and 'vistied' set
         long startTime = System.nanoTime();
         Queue<Integer> queue = new LinkedList<>(); // vertex id
         Set<Puzzle> visited = new HashSet<>();
 
-        // Create starting vertex
+        // Create first vertex
         int startId = graph.addVertex();
-        states.put(startId, initialPuzzle);
+        states.put(startId, puzzle);
 
-        // Set pi,visited & Add to the queue
+        // Set predeessor and add to the queue & visited
         graph.getVertex(startId).setPi(null);
         queue.offer(startId);
-        visited.add(initialPuzzle);
+        visited.add(puzzle);
 
         while (!queue.isEmpty()) {
             int currentId = queue.poll();
             Puzzle currentPuzzle = states.get(currentId);
 
-            // Algorithm requires a stopping condition (solution space is exponential)
+            // Algorithm requires a stopping condition (solutions space is exponential)
             if (currentPuzzle.isSolved()) {
-                System.out.println("\nSolved!\n");
-                Solution solution = new Solution(graph, startTime, visited.size(), currentId, states);
+                Solution solution = new Solution(graph, startTime, currentId, states);
                 clear();
                 return solution;
             }
@@ -47,8 +55,8 @@ public class PuzzleGraph {
             // Generate possible board states
             List<Puzzle> nextStates = currentPuzzle.generatePossibleMoves();
             for (Puzzle nextPuzzle : nextStates) {
-                if (!visited.contains(nextPuzzle)) { // State not discovered yet
-                    // Create possible state vertex
+                if (!visited.contains(nextPuzzle)) { // Board state doesnt discovered yet
+                    // Create the next state vertex
                     int nextId = graph.addVertex();
                     graph.addUndirectedEdge(currentId, nextId);
                     graph.getVertex(nextId).setPi(graph.getVertex(currentId));
@@ -62,8 +70,7 @@ public class PuzzleGraph {
     }
 
     public Solution AStarSearch(Puzzle puzzle, PuzzleHeuristic heuristic) {
-        this.initialPuzzle = puzzle;
-        // Set start time,priority queue and vistied set
+        // Set start time, priority queue of vertiex.ID and 'vistied' set
         long startTime = System.nanoTime();
         PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(
                 Comparator.comparingDouble(id -> graph.getVertex(id).getF()));
@@ -73,13 +80,13 @@ public class PuzzleGraph {
         int startId = graph.addVertex();
         Vertex startVertex = graph.getVertex(startId);
 
-        // Set pi,g,h,visited & Add to the queue
+        // Set predeessor, 'g' & 'h' scores and add to the queue & visited
         startVertex.setPi(null);
         startVertex.setG(0);
-        startVertex.setH(heuristic.calculate(initialPuzzle));
-        states.put(startId, initialPuzzle);
+        startVertex.setH(heuristic.calculate(puzzle));
+        states.put(startId, puzzle);
         priorityQueue.offer(startId);
-        visited.add(initialPuzzle);
+        visited.add(puzzle);
 
         while (!priorityQueue.isEmpty()) {
             int currentId = priorityQueue.poll();
@@ -87,26 +94,26 @@ public class PuzzleGraph {
             Puzzle currentPuzzle = states.get(currentId);
 
             if (currentPuzzle.isSolved()) {
-                System.out.println("\nSolved!\n");
-                Solution solution = new Solution(graph, startTime, visited.size(), currentId, states);
+                Solution solution = new Solution(graph, startTime, currentId, states);
                 clear();
                 return solution;
             }
 
+            // Generate possible board states
             List<Puzzle> nextStates = currentPuzzle.generatePossibleMoves();
-
             for (Puzzle nextPuzzle : nextStates) {
-                int nextId = graph.addVertex();
-                Vertex nextVertex = graph.getVertex(nextId);
-                nextVertex.setPi(currentVertex);
-                int tentativeG = currentVertex.getG() + 1; // All edges have weight 1
-
-                if (tentativeG < nextVertex.getG() || !visited.contains(nextPuzzle)) {
-                    nextVertex.setG(tentativeG);
+                if (!visited.contains(nextPuzzle)) { // Board state doesnt discovered yet
+                    // Create the next state vertex
+                    int nextId = graph.addVertex();
+                    Vertex nextVertex = graph.getVertex(nextId);
+                    graph.addUndirectedEdge(currentVertex.ID, nextVertex.ID);
+                    nextVertex.setPi(currentVertex);
+                    int gScore = currentVertex.getG() + 1; // All edges have weight 1
+                    nextVertex.setG(gScore);
                     nextVertex.setH(heuristic.calculate(nextPuzzle));
                     states.put(nextId, nextPuzzle);
-                    graph.addUndirectedEdge(currentVertex.ID, nextVertex.ID);
                     visited.add(nextPuzzle);
+                    // Add to the priority queue, updating the queue
                     priorityQueue.offer(nextId);
                 }
             }
@@ -115,7 +122,7 @@ public class PuzzleGraph {
     }
 
     private void clear() {
-        this.graph.clear();
+        this.graph = new Graph();
         this.states.clear();
     }
 
@@ -133,7 +140,7 @@ public class PuzzleGraph {
         }
 
         // Solve using A* with Zero function
-        Solution astarSolution1 = puzzleGraph.AStarSearch(puzzle, Heuristics.Zero_Heuristic);
+        Solution astarSolution1 = puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Zero_Heuristic);
         solutionsList.add(astarSolution1);
         if (print) {
             System.out.println("----------------------------- AStar (Zero func) ------------------------------");
@@ -141,7 +148,7 @@ public class PuzzleGraph {
         }
 
         // Solve using A* with Manhattan distance
-        Solution astarSolution2 = puzzleGraph.AStarSearch(puzzle, Heuristics.Manhattan_Distance);
+        Solution astarSolution2 = puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Manhattan_Distance);
         solutionsList.add(astarSolution2);
         if (print) {
             System.out.println("-----------------------------  AStar (Manhattan)  -----------------------------");
@@ -149,26 +156,26 @@ public class PuzzleGraph {
         }
 
         //         // Solve using A* with Euclidean distance
-        // Solution astarSolution5 = puzzleGraph.AStarSearch(puzzle, Heuristics.Euclidean_Distance);
+        // Solution astarSolution5 = puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Euclidean_Distance);
         // solutionsList.add(astarSolution5);
         // if (print) {
-            // System.out.println("-----------------------------  AStar (Euclidean)  -----------------------------");
+        //     System.out.println("-----------------------------  AStar (Euclidean)  -----------------------------");
         //     astarSolution5.print(timeUnit);
         // }
 
         // // Solve using A* with number of misplaced tiles
-        // Solution astarSolution3 = puzzleGraph.AStarSearch(puzzle, Heuristics.Misplaced_Tiles);
+        // Solution astarSolution3 = puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Misplaced_Tiles);
         // solutionsList.add(astarSolution3);
         // if (print) {
-            // System.out.println("-------------------------- AStar (Misplaced tiles) --------------------------");
+        //     System.out.println("-------------------------- AStar (Misplaced tiles) --------------------------");
         //     astarSolution3.print(timeUnit);
         // }
 
         // Solve using A* with Non-Admissible heursitic
-        Solution astarSolution4 = puzzleGraph.AStarSearch(puzzle, Heuristics.Nilsson_Sequence);
+        Solution astarSolution4 = puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Permutations_Inversions);
         solutionsList.add(astarSolution4);
         if (print) {
-            System.out.println("-------------------------- AStar (Nilsson's Sequence) --------------------------");
+            System.out.println("-------------------------- AStar (Permutation inversions) --------------------------");
             astarSolution4.print(timeUnit);
         }
 

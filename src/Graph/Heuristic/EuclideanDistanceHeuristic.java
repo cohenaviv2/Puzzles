@@ -25,7 +25,7 @@ public class EuclideanDistanceHeuristic implements PuzzleHeuristic {
             return heuristicCache.get(puzzle);
         }
         double distance = 0;
-        int size = puzzle.getSize();
+        int size = puzzle.size();
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
