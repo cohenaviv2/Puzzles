@@ -43,7 +43,7 @@ public class InversionsHeuristic implements PuzzleHeuristic {
             // Check if the last element is 0
             if (flattenedArray[i] == 0) {
                 inversions += (size * size - 1 - i);
-                break;
+                // break;
             }
             for (int j = i + 1; j < size * size; j++) {
                 if (flattenedArray[j] != 0 && flattenedArray[i] > flattenedArray[j]) {
@@ -54,6 +54,7 @@ public class InversionsHeuristic implements PuzzleHeuristic {
 
         }
 
+        // Cache the computed heuristic value
         heuristicCache.put(puzzle, inversions);
         return inversions;
     }

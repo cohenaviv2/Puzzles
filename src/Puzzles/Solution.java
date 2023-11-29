@@ -26,7 +26,7 @@ public class Solution {
     private final List<Puzzle> movementsList;
 
     public Solution(Graph graph, long startTime, int solutionVertexId, Map<Integer, Puzzle> states) {
-        System.out.println("\nSolved!\n");
+        // System.out.println("\nSolved!");
         this.graph = graph;
         this.solutionVertexId = solutionVertexId;
         // Elapsed Time

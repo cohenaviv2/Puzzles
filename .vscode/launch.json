@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Model",
+            "request": "launch",
+            "mainClass": "Model",
+            "projectName": "Puzzels_15c54bd5"
+        },
+        {
+            "type": "java",
             "name": "Puzzle",
             "request": "launch",
             "mainClass": "Puzzles.Puzzle",
