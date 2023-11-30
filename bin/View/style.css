@@ -1,0 +1,36 @@
+.board {
+    -fx-border-width: 2px;
+}
+
+.tile {
+    -fx-background-color: orange;
+    -fx-border-color: black;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 3;
+    -fx-padding: 10;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.empty-tile {
+    -fx-background-color: rgb(165, 164, 164);
+}
+
+.tile-blank {
+    -fx-background-color: white;
+}
+
+.bold-text {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.log-text {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.invalid {
+    -fx-border-color: red;
+    -fx-border-width: 1.5px;
+}
