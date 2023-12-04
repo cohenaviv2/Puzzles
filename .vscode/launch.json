@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Test",
+            "request": "launch",
+            "mainClass": "Model.Test.Test",
+            "projectName": "Puzzels_15c54bd5"
+        },
+        {
+            "type": "java",
             "name": "PuzzleSolverApp",
             "request": "launch",
             "mainClass": "View.PuzzleSolverApp",

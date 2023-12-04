@@ -1,19 +1,14 @@
 package Model;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import Model.Graph.Heuristic.PuzzleHeuristic;
 import Model.Puzzles.*;
 
-public class Model extends Observable {
+public class Model {
     private PuzzleGraph puzzleGraph;
-    private List<Solution> solutions;
     private int size;
 
     public Model() {
-        puzzleGraph = new PuzzleGraph();
-        solutions = new ArrayList<>();
+        this.puzzleGraph = new PuzzleGraph();
     }
 
     public Puzzle createRandomPuzzle(int size, int randomMoves) {
@@ -49,55 +44,32 @@ public class Model extends Observable {
         }
     }
 
-    public void Solve(Puzzle puzzle, List<String> algorithmList) {
-        for (String algorithm : algorithmList) {
-            switch (algorithm) {
+    public Solution solve(Puzzle puzzle, String algorithm) throws InterruptedException {
+         switch (algorithm) {
                 case ALGORITHMS.BFS:
-                System.out.println("model BFS");
-                    solutions.add(puzzleGraph.breadthFirstSearch(puzzle));
-                    System.out.println("BFS done: "+solutions.get(0).toString(TimeUnit.SECONDS));
-                    setChanged();
-                    notifyObservers(ALGORITHMS.BFS + " solved!");
-                    break;
+                    return puzzleGraph.breadthFirstSearch(puzzle);
                 case ALGORITHMS.DIJKSTRA:
-                    solutions.add(puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Zero_Heuristic));
-                    setChanged();
-                    notifyObservers(ALGORITHMS.DIJKSTRA + " solved!");
-                    break;
+                    return puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Zero_Heuristic);
                 case ALGORITHMS.ASTAR_MANHATTAN:
-                    solutions.add(puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Manhattan_Distance));
-                    setChanged();
-                    notifyObservers(ALGORITHMS.ASTAR_MANHATTAN + " solved!");
-                    break;
+                    return puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Manhattan_Distance);
                 case ALGORITHMS.ASTAR_EUCLIDEAN:
-                    solutions.add(puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Euclidean_Distance));
-                    setChanged();
-                    notifyObservers(ALGORITHMS.ASTAR_EUCLIDEAN + " solved!");
-                    break;
+                    return puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Euclidean_Distance);
                 case ALGORITHMS.ASTAR_MISPLACED:
-                    solutions.add(puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Misplaced_Tiles));
-                    setChanged();
-                    notifyObservers(ALGORITHMS.ASTAR_MISPLACED + " solved!");
-                    break;
+                    return puzzleGraph.AStarSearch(puzzle, PuzzleHeuristic.Misplaced_Tiles);
                 default:
                     throw new IllegalArgumentException("Invalid algorithm.");
-            }
-        }
-    }
-
-    public List<Solution> geSolutions() {
-        return solutions;
+         }
     }
 
     public int estimateDifficulty(Puzzle puzzle) {
         // Calculate the estimate using Manhattan distance
         double estimate = PuzzleHeuristic.Manhattan_Distance.calculate(puzzle);
 
-        if (estimate < 0 || estimate > (size == 5 ? 100 : size == 4 ? 58 : 30)) {
+        if (estimate < 0 || estimate > (size == 5 ? 100 : 58)) {
             throw new IllegalArgumentException("Input value must be between 0 and 58 (inclusive). input: " + estimate);
         }
 
-        double divider = size == 5 ? (100/4) : size == 4 ? (58/4) : (30/4);
+        double divider = size == 5 ? (90 / 4) : (58 / 4);
         double scaledValue = estimate / divider;
         int difficulty = (int) Math.floor(scaledValue + 0.5); // Add 0.5 to round to the nearest integer
 

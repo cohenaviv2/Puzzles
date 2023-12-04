@@ -97,9 +97,9 @@ public class Test {
 
     public static void main(String[] args) {
         TimeUnit timeUnit = TimeUnit.SECONDS;
-        int radomMoves = 10;
+        int radomMoves = 100;
         int numOfPuzzles = 50;
-        int times = 5;
+        int times = 1;
 
         // Test 1 - solve random 15-puzzle with all algorithm x5
         System.out.println("*******************\tTEST 1\t*******************");
@@ -111,30 +111,30 @@ public class Test {
             PuzzleGraph.solveWithDifferentAlgorithms(puzzle15, true, timeUnit);
         }
 
-        // Test 2 - solve random 24-puzzle with all algorithm x5
-        System.out.println("*******************\tTEST 2\t*******************");
-        for (int i = 0; i < times; i++) {
-            // Create random puzzle
-            Puzzle puzzle15 = new TwentyFourPuzzle(radomMoves);
-            System.out.println(puzzle15);
-            // Solve using all algorithms & print solutions
-            PuzzleGraph.solveWithDifferentAlgorithms(puzzle15, true, timeUnit);
-        }
+        // // Test 2 - solve random 24-puzzle with all algorithm x5
+        // System.out.println("*******************\tTEST 2\t*******************");
+        // for (int i = 0; i < times; i++) {
+        //     // Create random puzzle
+        //     Puzzle puzzle15 = new TwentyFourPuzzle(radomMoves);
+        //     System.out.println(puzzle15);
+        //     // Solve using all algorithms & print solutions
+        //     PuzzleGraph.solveWithDifferentAlgorithms(puzzle15, true, timeUnit);
+        // }
 
-        // Test 3 - solve 50 random 15-puzzles with each algorithm
-        System.out.println("*******************\tTEST 3\t*******************");
-        runSolvingExperiment(FifteenPuzzle.class, radomMoves, numOfPuzzles, false, timeUnit);
+        // // Test 3 - solve 50 random 15-puzzles with each algorithm
+        // System.out.println("*******************\tTEST 3\t*******************");
+        // runSolvingExperiment(FifteenPuzzle.class, radomMoves, numOfPuzzles, false, timeUnit);
 
-        // Test 4 - solve 50 random 24-puzzles with each algorithm
-        System.out.println("*******************\tTEST 4\t*******************");
-        runSolvingExperiment(TwentyFourPuzzle.class, radomMoves, numOfPuzzles, false, timeUnit);
+        // // Test 4 - solve 50 random 24-puzzles with each algorithm
+        // System.out.println("*******************\tTEST 4\t*******************");
+        // runSolvingExperiment(TwentyFourPuzzle.class, radomMoves, numOfPuzzles, false, timeUnit);
 
-        // Test 5 - Model
-        Model m = new Model();
-        int[][] difficultBoard = { { 0, 12, 9, 13 }, { 15, 11, 10, 14 }, { 3, 7, 2, 5 }, { 4, 8, 6, 1 } };
-        int[][] solvedBoard = { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 }, { 13, 14, 15, 0 } };
-        System.out.println("difficulty: " + m.estimateDifficulty(new FifteenPuzzle(difficultBoard)));
-        System.out.println("difficulty: " + m.estimateDifficulty(new FifteenPuzzle(solvedBoard)));
-        System.out.println("difficulty: " + m.estimateDifficulty(new FifteenPuzzle(50000)));
+        // // Test 5 - Model
+        // Model m = new Model();
+        // int[][] difficultBoard = { { 0, 12, 9, 13 }, { 15, 11, 10, 14 }, { 3, 7, 2, 5 }, { 4, 8, 6, 1 } };
+        // int[][] solvedBoard = { { 1, 2, 3, 4 }, { 5, 6, 7, 8 }, { 9, 10, 11, 12 }, { 13, 14, 15, 0 } };
+        // System.out.println("difficulty: " + m.estimateDifficulty(new FifteenPuzzle(difficultBoard)));
+        // System.out.println("difficulty: " + m.estimateDifficulty(new FifteenPuzzle(solvedBoard)));
+        // System.out.println("difficulty: " + m.estimateDifficulty(new FifteenPuzzle(50000)));
     }
 }
