@@ -17,6 +17,18 @@ This repository contains an implementation of the popular 15-puzzle and 24-puzzl
 2. Visualize the search process and observe the optimal path to the solution.
 3. Experiment with variations of initial puzzle states.
 
+## Release:
+
+### Windows
+
+Download the game installer for Windows: <br>
+[https://github.com/cohenaviv2/Book-Scrabble/releases/download/v1.1/Book_Scrabble_Setup.exe](https://github.com/cohenaviv2/Puzzles/releases/download/v1.0/Puzzles_steup.exe)
+
+### Other Platforms
+
+For other platforms, ensure you have Java Runtime Environment (JRE) installed. <br> You can play the game by downloading the repository and running the JAR file: <br>
+[https://github.com/cohenaviv2/Book-Scrabble/archive/refs/tags/v1.1.zip](https://github.com/cohenaviv2/Puzzles/archive/refs/tags/v1.0.zip)
+
 ## Conclusion:
 
 After implementing a graph and the Puzzle class, I tried to produce a graph that represents all possible board states. <br> I noticed that the task takes too much time, and after researching a bit I realized that the number of possible board positions for a puzzle of size nxn is (n^2!), and more precisely the number of possible legal board positions is the number of odd permutations: ((n^2!))/ 2. <br>
