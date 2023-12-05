@@ -2,6 +2,10 @@
 
 This repository contains an implementation of the popular 15-puzzle and 24-puzzle problem-solving using Breadth-First Search (BFS), Dijkstra's algorithm, and A* algorithm.
 
+<p align="center">
+<img src="https://i.postimg.cc/0NzjhF47/screenshot.jpg" width="900px" height="570px">
+</p>
+
 ## Key Features:
 
 - Efficient implementations of BFS, Dijkstra, and A* algorithms tailored for puzzle-solving scenarios.
