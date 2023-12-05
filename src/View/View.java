@@ -309,8 +309,8 @@ public class View extends Observable {
         // Create a spinner for random moves
         initialPuzzleBox.setAlignment(Pos.CENTER);
         randomMovesSpinner = new Spinner<>();
-        randomMovesSpinner.setPrefWidth(110);
-        randomMovesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1000000));
+        randomMovesSpinner.setPrefWidth(70);
+        randomMovesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 500));
         randomMovesSpinner.setEditable(true); // Allow manual input
         randomMovesSpinner.setOnMouseClicked(e -> {
             if (generateButton.getStyleClass().contains("invalid")) {
@@ -329,7 +329,7 @@ public class View extends Observable {
                 int newValueInt = Integer.parseInt(newValue);
 
                 // Validate that the parsed value is within the allowed range
-                if (newValueInt >= 1 && newValueInt <= 1000000) {
+                if (newValueInt >= 1 && newValueInt <= 500) {
                     randomMovesSpinner.getStyleClass().remove("invalid");
                     randomMovesSpinner.getValueFactory().setValue(newValueInt);
                 } else {
@@ -628,14 +628,22 @@ public class View extends Observable {
         resolveButton.setDisable(true);
         resolveButton.setOnAction(e -> {
             Platform.runLater(() -> {
+                viewModel.getSolutionsProperty().clear();
                 viewModel.solvePuzzleWithAlgorithms(algorithmList);
                 VBox solutionsBox = createSolutionsBox();
                 setChanged();
                 notifyObservers(solutionsBox);
             });
         });
+        Button clearButton = new Button("clear");
+        clearButton.getStyleClass().add("clear-button");
+        clearButton.setOnAction(e -> {
+            Platform.runLater(() -> {
+                viewModel.clearLog();
+            });
+        });
 
-        HBox buttonsBox = new HBox(5, stopButton, resolveButton);
+        HBox buttonsBox = new HBox(5,clearButton, stopButton, resolveButton);
         buttonsBox.setAlignment(Pos.CENTER);
 
         logBox.getChildren().addAll(logListView, buttonsBox);
@@ -650,6 +658,12 @@ public class View extends Observable {
         timeUnitBox.setPadding(new Insets(5, 0, 0, 25));
         Label timeUnitLabel = new Label("Time Unit:");
         ComboBox<String> timeUnitComboBox = new ComboBox<>();
+        timeUnitComboBox.setDisable(true);
+        viewModel.getSolutionsProperty().addListener((obs,oldVal,newVal)->{
+            if (newVal.size()==1){
+                timeUnitComboBox.setDisable(false);
+            }
+        });
         HashMap<String, TimeUnit> timeMap = new HashMap<>();
         timeMap.put(TimeUnit.SECONDS.name(), TimeUnit.SECONDS);
         timeMap.put(TimeUnit.MILLISECONDS.name(), TimeUnit.MILLISECONDS);

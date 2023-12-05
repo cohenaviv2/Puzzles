@@ -5,11 +5,12 @@ import Model.Puzzles.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 
 public class ViewModel {
     private Model model;
@@ -63,6 +64,7 @@ public class ViewModel {
     public void solvePuzzleWithAlgorithms(List<String> algorithms) {
         executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             CountDownLatch latch = new CountDownLatch(algorithms.size());
             for (String algorithm : algorithms) {
                 // Solve the puzzle for the current algorithm
@@ -105,6 +107,10 @@ public class ViewModel {
             addToLog("\n");
             executorService.shutdownNow();
         }
+    }
+
+    public void clearLog() {
+        logListProperty.clear();
     }
 
     public void reset() {

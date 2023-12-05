@@ -46,3 +46,9 @@
     -fx-font-weight: bold;
     -fx-background-radius: 10;
 }
+
+.clear-button {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+}

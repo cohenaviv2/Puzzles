@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.concurrent.TimeUnit;
+
 import Model.Graph.Heuristic.PuzzleHeuristic;
 import Model.Puzzles.*;
 
@@ -85,4 +87,14 @@ public class Model {
         public static final String ASTAR_MISPLACED = "ASTAR_MISPLACED";
     }
 
+    public static void main(String[] args) {
+        Model m = new Model();
+        try {
+            Solution s = m.solve(m.createRandomPuzzle(4, 500), ALGORITHMS.ASTAR_MANHATTAN);
+            System.out.println(s.toString(TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
